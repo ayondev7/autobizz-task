@@ -15,12 +15,12 @@ import Spinner from "@/components/ui/Spinner";
 
 export default function SalesChart({ data = [], isLoading }) {
   const chartData = data.map((item) => ({
-    date: new Date(item.saleDate).toLocaleDateString("en-US", {
+    date: new Date(item.day).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     }),
-    totalSales: parseFloat(item.totalSales) || 0,
-    fullDate: item.saleDate,
+    totalSales: parseFloat(item.totalSale) || 0,
+    fullDate: item.day,
   }));
 
   const sortedData = [...chartData].sort(

@@ -2,7 +2,7 @@
 
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { FiSearch, FiX } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 
 export default function Filters({ filters, onFilterChange, onClearFilters }) {
   const handleChange = (key, value) => {
@@ -37,8 +37,8 @@ export default function Filters({ filters, onFilterChange, onClearFilters }) {
             label="Minimum Price"
             type="number"
             placeholder="0.00"
-            value={filters.minPrice || ""}
-            onChange={(e) => handleChange("minPrice", e.target.value)}
+            value={filters.priceMin || ""}
+            onChange={(e) => handleChange("priceMin", e.target.value)}
           />
         </div>
         <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[200px]">
@@ -46,8 +46,8 @@ export default function Filters({ filters, onFilterChange, onClearFilters }) {
             label="Customer Email"
             type="email"
             placeholder="customer@email.com"
-            value={filters.customerEmail || ""}
-            onChange={(e) => handleChange("customerEmail", e.target.value)}
+            value={filters.email || ""}
+            onChange={(e) => handleChange("email", e.target.value)}
           />
         </div>
         <div className="w-full sm:w-auto">

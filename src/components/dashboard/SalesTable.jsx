@@ -14,10 +14,10 @@ import { FiArrowUp, FiArrowDown } from "react-icons/fi";
 export default function SalesTable({ data = [], isLoading, sortConfig, onSort }) {
   const handleSort = (field) => {
     let newOrder = "asc";
-    if (sortConfig.sortBy === field && sortConfig.order === "asc") {
+    if (sortConfig.sortBy === field && sortConfig.sortOrder === "asc") {
       newOrder = "desc";
     }
-    onSort({ sortBy: field, order: newOrder });
+    onSort({ sortBy: field, sortOrder: newOrder });
   };
 
   const SortIcon = ({ field }) => {
@@ -28,7 +28,7 @@ export default function SalesTable({ data = [], isLoading, sortConfig, onSort })
         </span>
       );
     }
-    return sortConfig.order === "asc" ? (
+    return sortConfig.sortOrder === "asc" ? (
       <FiArrowUp className="ml-1 w-3 h-3 text-primary" />
     ) : (
       <FiArrowDown className="ml-1 w-3 h-3 text-primary" />
@@ -72,47 +72,41 @@ export default function SalesTable({ data = [], isLoading, sortConfig, onSort })
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead>ID</TableHead>
               <TableHead
-                onClick={() => handleSort("saleDate")}
+                onClick={() => handleSort("date")}
                 className="cursor-pointer hover:text-foreground select-none"
               >
                 <span className="flex items-center">
                   Date
-                  <SortIcon field="saleDate" />
+                  <SortIcon field="date" />
                 </span>
               </TableHead>
-              <TableHead>Customer</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Phone</TableHead>
               <TableHead
-                onClick={() => handleSort("totalSales")}
+                onClick={() => handleSort("price")}
                 className="cursor-pointer hover:text-foreground select-none"
               >
                 <span className="flex items-center">
-                  Total Sales
-                  <SortIcon field="totalSales" />
+                  Price
+                  <SortIcon field="price" />
                 </span>
               </TableHead>
-              <TableHead>Product</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((sale) => (
-              <TableRow key={sale.id}>
-                <TableCell className="font-medium">{sale.id}</TableCell>
-                <TableCell>{formatDate(sale.saleDate)}</TableCell>
-                <TableCell>{sale.customerName}</TableCell>
+              <TableRow key={sale._id}>
+                <TableCell>{formatDate(sale.date)}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {sale.customerEmail}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {sale.phone}
+                  {sale.customerPhone}
                 </TableCell>
                 <TableCell className="font-semibold text-green-600">
-                  {formatCurrency(sale.totalSales)}
+                  {formatCurrency(sale.price)}
                 </TableCell>
-                <TableCell>{sale.productName}</TableCell>
               </TableRow>
             ))}
           </TableBody>

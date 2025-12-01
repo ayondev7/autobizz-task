@@ -1,17 +1,17 @@
 "use client";
 
 import Card, { CardContent } from "@/components/ui/Card";
-import { FiDollarSign, FiTrendingUp, FiShoppingCart, FiUsers } from "react-icons/fi";
+import { FiDollarSign, FiTrendingUp, FiShoppingCart, FiCalendar } from "react-icons/fi";
 
-export default function StatsCards({ data = [] }) {
-  const totalSales = data.reduce(
-    (sum, item) => sum + (parseFloat(item.totalSales) || 0),
+export default function StatsCards({ totalSalesData = [], salesData = [] }) {
+  const totalRevenue = totalSalesData.reduce(
+    (sum, item) => sum + (parseFloat(item.totalSale) || 0),
     0
   );
 
-  const avgSale = data.length > 0 ? totalSales / data.length : 0;
+  const avgDailySale = totalSalesData.length > 0 ? totalRevenue / totalSalesData.length : 0;
 
-  const uniqueCustomers = new Set(data.map((item) => item.customerEmail)).size;
+  const uniqueCustomers = new Set(salesData.map((item) => item.customerEmail)).size;
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-US", {
@@ -25,29 +25,29 @@ export default function StatsCards({ data = [] }) {
   const stats = [
     {
       title: "Total Revenue",
-      value: formatCurrency(totalSales),
+      value: formatCurrency(totalRevenue),
       icon: FiDollarSign,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
     {
       title: "Total Orders",
-      value: data.length.toString(),
+      value: salesData.length.toString(),
       icon: FiShoppingCart,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
     {
-      title: "Average Sale",
-      value: formatCurrency(avgSale),
+      title: "Avg Daily Sale",
+      value: formatCurrency(avgDailySale),
       icon: FiTrendingUp,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
     },
     {
-      title: "Unique Customers",
-      value: uniqueCustomers.toString(),
-      icon: FiUsers,
+      title: "Days in Range",
+      value: totalSalesData.length.toString(),
+      icon: FiCalendar,
       color: "text-orange-500",
       bgColor: "bg-orange-500/10",
     },
