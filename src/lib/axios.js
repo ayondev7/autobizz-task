@@ -8,12 +8,29 @@ const axiosInstance = axios.create({
   },
 });
 
+const getAuthData = () => {
+  if (typeof window === "undefined") return null;
+  const authData = localStorage.getItem("authData");
+  if (!authData) return null;
+  try {
+    return JSON.parse(authData);
+  } catch {
+    return null;
+  }
+};
+
+const isTokenValid = () => {
+  const authData = getAuthData();
+  if (!authData?.token || !authData?.expiresAt) return false;
+  return Date.now() < authData.expiresAt;
+};
+
 axiosInstance.interceptors.request.use(
   (config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== "undefined" && !config.url?.includes("getAuthorize")) {
+      const authData = getAuthData();
+      if (authData?.token && isTokenValid()) {
+        config.headers["X-AUTOBIZZ-TOKEN"] = authData.token;
       }
     }
     return config;
@@ -30,7 +47,7 @@ axiosInstance.interceptors.response.use(
       const { status } = error.response;
       if (status === 401) {
         if (typeof window !== "undefined") {
-          localStorage.removeItem("authToken");
+          localStorage.removeItem("authData");
         }
       }
     }
@@ -38,4 +55,5 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+export { getAuthData, isTokenValid };
 export default axiosInstance;

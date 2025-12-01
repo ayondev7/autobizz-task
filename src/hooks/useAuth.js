@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axiosInstance from "@/lib/axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance, { isTokenValid } from "@/lib/axios";
 import { API_ROUTES } from "@/routes/api";
 
 export function useAuthorization() {
@@ -7,23 +7,29 @@ export function useAuthorization() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const response = await axiosInstance.post(API_ROUTES.AUTHORIZE);
+      const response = await axiosInstance.post(API_ROUTES.AUTHORIZE, {
+        tokenType: "frontEndTest",
+      });
       return response.data;
     },
     onSuccess: (data) => {
-      if (data?.key) {
-        localStorage.setItem("authToken", data.key);
+      if (data?.token) {
+        const authData = {
+          token: data.token,
+          expiresAt: Date.now() + data.expire * 1000,
+        };
+        localStorage.setItem("authData", JSON.stringify(authData));
         queryClient.invalidateQueries({ queryKey: ["sales"] });
       }
     },
   });
 
   const checkAndAuthorize = async () => {
-    const existingToken = localStorage.getItem("authToken");
-    if (!existingToken) {
-      return mutation.mutateAsync();
+    if (isTokenValid()) {
+      const authData = JSON.parse(localStorage.getItem("authData"));
+      return { token: authData.token };
     }
-    return { key: existingToken };
+    return mutation.mutateAsync();
   };
 
   return {
@@ -35,17 +41,4 @@ export function useAuthorization() {
     error: mutation.error,
     data: mutation.data,
   };
-}
-
-export function useAuthToken() {
-  return useQuery({
-    queryKey: ["authToken"],
-    queryFn: () => {
-      if (typeof window !== "undefined") {
-        return localStorage.getItem("authToken");
-      }
-      return null;
-    },
-    staleTime: Infinity,
-  });
 }
