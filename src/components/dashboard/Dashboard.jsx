@@ -15,14 +15,14 @@ import { FiBarChart2 } from "react-icons/fi";
 const initialFilters = {
   startDate: "",
   endDate: "",
-  minPrice: "",
-  customerEmail: "",
+  priceMin: "",
+  email: "",
   phone: "",
 };
 
 const initialSort = {
   sortBy: "",
-  order: "",
+  sortOrder: "",
 };
 
 export default function Dashboard() {
@@ -40,7 +40,6 @@ export default function Dashboard() {
     ...filters,
     ...sortConfig,
     ...paginationTokens,
-    limit: 50,
   };
 
   Object.keys(salesQueryParams).forEach((key) => {
@@ -57,7 +56,6 @@ export default function Dashboard() {
     data: salesData,
     isLoading: salesLoading,
     isFetching,
-    refetch,
   } = useSales(salesQueryParams);
 
   useEffect(() => {
@@ -66,7 +64,7 @@ export default function Dashboard() {
         await checkAndAuthorize();
         setIsAuthorized(true);
       } catch (error) {
-        console.error("Authorization failed:", error);
+        setIsAuthorized(false);
       }
     };
     initAuth();
@@ -89,22 +87,22 @@ export default function Dashboard() {
   }, []);
 
   const handlePrevious = useCallback(() => {
-    if (salesData?.before) {
+    if (salesData?.pagination?.before) {
       setPaginationTokens({
-        before: salesData.before,
+        before: salesData.pagination.before,
         after: null,
       });
     }
-  }, [salesData?.before]);
+  }, [salesData?.pagination?.before]);
 
   const handleNext = useCallback(() => {
-    if (salesData?.after) {
+    if (salesData?.pagination?.after) {
       setPaginationTokens({
         before: null,
-        after: salesData.after,
+        after: salesData.pagination.after,
       });
     }
-  }, [salesData?.after]);
+  }, [salesData?.pagination?.after]);
 
   if (authLoading) {
     return (
@@ -117,9 +115,8 @@ export default function Dashboard() {
     );
   }
 
-  const salesItems = salesData?.data || salesData?.items || salesData || [];
-  const isDataArray = Array.isArray(salesItems);
-  const displayData = isDataArray ? salesItems : [];
+  const totalSalesData = salesData?.results?.TotalSales || [];
+  const salesItems = salesData?.results?.Sales || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,9 +149,9 @@ export default function Dashboard() {
             />
           </Card>
 
-          <StatsCards data={displayData} />
+          <StatsCards totalSalesData={totalSalesData} salesData={salesItems} />
 
-          <SalesChart data={displayData} isLoading={salesLoading && !isFetching} />
+          <SalesChart data={totalSalesData} isLoading={salesLoading && !isFetching} />
 
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -167,14 +164,14 @@ export default function Dashboard() {
               )}
             </div>
             <SalesTable
-              data={displayData}
+              data={salesItems}
               isLoading={salesLoading}
               sortConfig={sortConfig}
               onSort={handleSort}
             />
             <Pagination
-              beforeToken={salesData?.before}
-              afterToken={salesData?.after}
+              beforeToken={salesData?.pagination?.before}
+              afterToken={salesData?.pagination?.after}
               onPrevious={handlePrevious}
               onNext={handleNext}
               isLoading={salesLoading || isFetching}
