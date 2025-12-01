@@ -131,7 +131,7 @@ export default function Dashboard() {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-foreground">
-                AutoBizz Sales Dashboard
+                Sales Dashboard
               </h1>
               <p className="text-sm text-muted-foreground hidden sm:block">
                 Track and analyze your sales performance
@@ -185,7 +185,7 @@ export default function Dashboard() {
 
       <footer className="border-t border-border bg-card mt-8">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          © 2025 AutoBizz. All rights reserved.
+          © 2025 All rights reserved.
         </div>
       </footer>
     </div>
