@@ -26,6 +26,7 @@ const initialSort = {
 };
 
 export default function Dashboard() {
+  const [mounted, setMounted] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [filters, setFilters] = useState(initialFilters);
   const [sortConfig, setSortConfig] = useState(initialSort);
@@ -37,38 +38,45 @@ export default function Dashboard() {
   const { checkAndAuthorize, isLoading: authLoading } = useAuthorization();
 
   const salesQueryParams = {
-    ...filters,
-    ...sortConfig,
-    ...paginationTokens,
+    startDate: filters.startDate || "",
+    endDate: filters.endDate || "",
+    priceMin: filters.priceMin || "",
+    email: filters.email || "",
+    phone: filters.phone || "",
+    sortBy: sortConfig.sortBy || "date",
+    sortOrder: sortConfig.sortOrder || "asc",
+    before: paginationTokens.before || "",
+    after: paginationTokens.after || "",
   };
 
-  Object.keys(salesQueryParams).forEach((key) => {
-    if (
-      salesQueryParams[key] === "" ||
-      salesQueryParams[key] === null ||
-      salesQueryParams[key] === undefined
-    ) {
-      delete salesQueryParams[key];
-    }
-  });
+  console.log("[Dashboard] Sales query params:", salesQueryParams);
 
   const {
     data: salesData,
     isLoading: salesLoading,
     isFetching,
-  } = useSales(salesQueryParams);
+  } = useSales(salesQueryParams, isAuthorized);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const initAuth = async () => {
+      console.log("[Dashboard] Initializing auth...");
       try {
-        await checkAndAuthorize();
+        const result = await checkAndAuthorize();
+        console.log("[Dashboard] Auth result:", result);
         setIsAuthorized(true);
       } catch (error) {
+        console.error("[Dashboard] Auth error:", error);
         setIsAuthorized(false);
       }
     };
     initAuth();
-  }, []);
+  }, [mounted]);
 
   const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
@@ -104,12 +112,13 @@ export default function Dashboard() {
     }
   }, [salesData?.pagination?.after]);
 
-  if (authLoading) {
+  // Show loading state until mounted to prevent hydration mismatch
+  if (!mounted || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <Spinner size="xl" />
-          <p className="mt-4 text-muted-foreground">Authorizing...</p>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
