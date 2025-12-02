@@ -105,9 +105,9 @@ export default function SalesChart({ data = [], isLoading }) {
         <CardTitle>Sales Over Time</CardTitle>
         <div className="flex gap-1 rounded-lg border border-border p-1">
           {[
-            { value: "week", label: "Week" },
-            { value: "month", label: "Month" },
-            { value: "day", label: "Day" },
+            { value: "week", label: "Weekly" },
+            { value: "month", label: "Monthly" },
+            { value: "day", label: "Daily" },
           ].map((option) => (
             <button
               key={option.value}
@@ -132,22 +132,14 @@ export default function SalesChart({ data = [], isLoading }) {
             >
               <defs>
                 <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="hsl(var(--chart-1))"
-                    stopOpacity={0.3}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="hsl(var(--chart-1))"
-                    stopOpacity={0}
-                  />
+                  <stop offset="5%" stopColor="#60A5FA" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#06B6D4" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e6f5ff" />
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#374151' }}
                 tickLine={false}
                 axisLine={false}
                 className="text-muted-foreground"
@@ -157,7 +149,7 @@ export default function SalesChart({ data = [], isLoading }) {
                 height={sortedData.length > 12 ? 60 : 30}
               />
               <YAxis
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#374151' }}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `$${value.toLocaleString()}`}
@@ -181,11 +173,11 @@ export default function SalesChart({ data = [], isLoading }) {
                 type="monotone"
                 dataKey="totalSales"
                 name="Total Sales"
-                stroke="hsl(var(--chart-1))"
+                stroke="#0284C7"
                 strokeWidth={2}
                 fill="url(#salesGradient)"
                 dot={sortedData.length <= 31}
-                activeDot={{ r: 6, fill: "hsl(var(--chart-1))" }}
+                activeDot={{ r: 6, fill: '#0284C7' }}
               />
             </AreaChart>
           </ResponsiveContainer>
