@@ -128,7 +128,6 @@ export default function Dashboard() {
     }
   }, [salesData?.pagination?.after]);
 
-  // Show loading state until mounted to prevent hydration mismatch
   if (!mounted || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -204,12 +203,6 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
-
-      <footer className="border-t border-border bg-card mt-8">
-        <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          © 2025 All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }
