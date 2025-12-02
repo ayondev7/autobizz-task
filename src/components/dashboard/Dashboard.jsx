@@ -65,8 +65,6 @@ export default function Dashboard() {
     after: paginationTokens.after || "",
   };
 
-  console.log("[Dashboard] Sales query params:", salesQueryParams);
-
   const {
     data: salesData,
     isLoading: salesLoading,
@@ -81,10 +79,8 @@ export default function Dashboard() {
     if (!mounted || isAuthorized) return;
     
     const initAuth = async () => {
-      console.log("[Dashboard] Initializing auth...");
       try {
         const result = await checkAndAuthorize();
-        console.log("[Dashboard] Auth result:", result);
         setIsAuthorized(true);
       } catch (error) {
         console.error("[Dashboard] Auth error:", error);

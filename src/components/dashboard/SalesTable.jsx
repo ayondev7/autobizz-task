@@ -11,7 +11,7 @@ import Card from "@/components/ui/Card";
 import Spinner from "@/components/ui/Spinner";
 import { FiArrowUp, FiArrowDown } from "react-icons/fi";
 
-export default function SalesTable({ data = [], isLoading, sortConfig, onSort }) {
+export default function SalesTable({ data = [], isLoading, sortConfig, onSort, startIndex = 0 }) {
   const handleSort = (field) => {
     let newOrder = "asc";
     if (sortConfig.sortBy === field && sortConfig.sortOrder === "asc") {
@@ -72,6 +72,7 @@ export default function SalesTable({ data = [], isLoading, sortConfig, onSort })
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
+              <TableHead className="w-12">#</TableHead>
               <TableHead
                 onClick={() => handleSort("date")}
                 className="cursor-pointer hover:text-foreground select-none"
@@ -95,8 +96,9 @@ export default function SalesTable({ data = [], isLoading, sortConfig, onSort })
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((sale) => (
+            {data.map((sale, idx) => (
               <TableRow key={sale._id}>
+                <TableCell className="text-muted-foreground">#{startIndex + idx + 1}</TableCell>
                 <TableCell>{formatDate(sale.date)}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {sale.customerEmail}

@@ -8,12 +8,10 @@ const axiosInstance = axios.create({
   },
 });
 
-// Cookie helper functions
 const setCookie = (name, value, seconds) => {
   if (typeof window === "undefined") return;
   const expires = new Date(Date.now() + seconds * 1000).toUTCString();
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
-  console.log(`[Cookie] Set ${name}, expires in ${seconds} seconds`);
 };
 
 const getCookie = (name) => {
@@ -22,19 +20,15 @@ const getCookie = (name) => {
   for (const cookie of cookies) {
     const [key, val] = cookie.split("=");
     if (key === name) {
-      const value = decodeURIComponent(val);
-      console.log(`[Cookie] Get ${name}:`, value);
-      return value;
+      return decodeURIComponent(val);
     }
   }
-  console.log(`[Cookie] ${name} not found`);
   return null;
 };
 
 const deleteCookie = (name) => {
   if (typeof window === "undefined") return;
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  console.log(`[Cookie] Deleted ${name}`);
 };
 
 const getToken = () => {
@@ -59,30 +53,17 @@ const clearAuthToken = () => {
 const isTokenValid = () => {
   const token = getToken();
   const expiry = getTokenExpiry();
-  const valid = !!(token && expiry && Date.now() < expiry);
-  console.log(`[Auth] Token valid:`, valid);
-  return valid;
+  return !!(token && expiry && Date.now() < expiry);
 };
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    console.log(`[Request] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
-    
     if (typeof window !== "undefined" && !config.url?.includes("getAuthorize")) {
       const token = getToken();
       if (token && isTokenValid()) {
         config.headers["X-AUTOBIZZ-TOKEN"] = token;
-        console.log(`[Request] Added X-AUTOBIZZ-TOKEN header:`, token);
       }
     }
-    
-    if (config.params) {
-      console.log(`[Request] Query params:`, config.params);
-    }
-    if (config.data) {
-      console.log(`[Request] Body:`, config.data);
-    }
-    
     return config;
   },
   (error) => {
@@ -93,8 +74,6 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log(`[Response] ${response.status} ${response.config.url}`);
-    console.log(`[Response] Data:`, response.data);
     return response;
   },
   (error) => {
@@ -102,7 +81,6 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       const { status } = error.response;
       if (status === 401) {
-        console.log(`[Auth] 401 - Clearing token`);
         clearAuthToken();
       }
     }
