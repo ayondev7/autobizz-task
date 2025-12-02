@@ -13,9 +13,9 @@ import { FiArrowUp, FiArrowDown } from "react-icons/fi";
 
 export default function SalesTable({ data = [], isLoading, sortConfig, onSort, startIndex = 0 }) {
   const handleSort = (field) => {
-    let newOrder = "asc";
-    if (sortConfig.sortBy === field && sortConfig.sortOrder === "asc") {
-      newOrder = "desc";
+    let newOrder = "desc";
+    if (sortConfig.sortBy === field) {
+      newOrder = sortConfig.sortOrder === "asc" ? "desc" : "asc";
     }
     onSort({ sortBy: field, sortOrder: newOrder });
   };
@@ -23,15 +23,15 @@ export default function SalesTable({ data = [], isLoading, sortConfig, onSort, s
   const SortIcon = ({ field }) => {
     if (sortConfig.sortBy !== field) {
       return (
-        <span className="ml-1 text-muted-foreground/50">
-          <FiArrowUp className="w-3 h-3" />
+        <span className="ml-1 text-primary">
+          <FiArrowUp className="w-4 h-4" />
         </span>
       );
     }
     return sortConfig.sortOrder === "asc" ? (
-      <FiArrowUp className="ml-1 w-3 h-3 text-primary" />
+      <FiArrowUp className="ml-1 w-4 h-4 text-primary" />
     ) : (
-      <FiArrowDown className="ml-1 w-3 h-3 text-primary" />
+      <FiArrowDown className="ml-1 w-4 h-4 text-primary" />
     );
   };
 
