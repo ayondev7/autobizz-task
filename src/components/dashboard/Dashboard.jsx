@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuthorization } from "@/hooks/useAuth";
 import { useSales } from "@/hooks/useSales";
 import Filters from "@/components/dashboard/Filters";
@@ -25,6 +25,20 @@ const initialSort = {
   sortOrder: "",
 };
 
+function useDebounce(value, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -35,14 +49,16 @@ export default function Dashboard() {
     after: null,
   });
 
+  const debouncedFilters = useDebounce(filters, 500);
+
   const { checkAndAuthorize, isLoading: authLoading } = useAuthorization();
 
   const salesQueryParams = {
-    startDate: filters.startDate || "",
-    endDate: filters.endDate || "",
-    priceMin: filters.priceMin || "",
-    email: filters.email || "",
-    phone: filters.phone || "",
+    startDate: debouncedFilters.startDate || "",
+    endDate: debouncedFilters.endDate || "",
+    priceMin: debouncedFilters.priceMin || "",
+    email: debouncedFilters.email || "",
+    phone: debouncedFilters.phone || "",
     sortBy: sortConfig.sortBy || "date",
     sortOrder: sortConfig.sortOrder || "asc",
     before: paginationTokens.before || "",
