@@ -4,8 +4,8 @@ import Button from "@/components/ui/Button";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 export default function Pagination({
-  beforeToken,
-  afterToken,
+  canGoPrevious,
+  canGoNext,
   onPrevious,
   onNext,
   isLoading,
@@ -15,7 +15,7 @@ export default function Pagination({
       <Button
         variant="outline"
         onClick={onPrevious}
-        disabled={!beforeToken || isLoading}
+        disabled={!canGoPrevious || isLoading}
         className="gap-2"
       >
         <FiChevronLeft className="w-4 h-4" />
@@ -24,7 +24,7 @@ export default function Pagination({
       <Button
         variant="outline"
         onClick={onNext}
-        disabled={!afterToken || isLoading}
+        disabled={!canGoNext || isLoading}
         className="gap-2"
       >
         Next
