@@ -78,7 +78,7 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || isAuthorized) return;
     
     const initAuth = async () => {
       console.log("[Dashboard] Initializing auth...");
@@ -92,7 +92,7 @@ export default function Dashboard() {
       }
     };
     initAuth();
-  }, [mounted]);
+  }, [mounted, isAuthorized, checkAndAuthorize]);
 
   const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);

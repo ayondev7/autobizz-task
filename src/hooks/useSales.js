@@ -28,23 +28,25 @@ export function useSales(filters = {}, enabled = false) {
     after,
   };
 
+  // Create a stable query key by sorting and stringifying params
+  const queryKey = ["sales", JSON.stringify(params)];
+
   return useQuery({
-    queryKey: ["sales", params],
+    queryKey,
     queryFn: async () => {
       console.log("[useSales] Fetching sales with params:", params);
-      console.log("[useSales] Full URL will be:", `${process.env.NEXT_PUBLIC_API_BASE_URL}${API_ROUTES.SALES}?startDate=${startDate}&endDate=${endDate}&priceMin=${priceMin}&email=${email}&phone=${phone}&sortBy=${sortBy}&sortOrder=${sortOrder}&after=${after}&before=${before}`);
       
       const response = await axiosInstance.get(API_ROUTES.SALES, { params });
       
       console.log("[useSales] Response received:");
-      console.log("[useSales] TotalSales:", response.data?.results?.TotalSales);
       console.log("[useSales] Sales count:", response.data?.results?.Sales?.length);
-      console.log("[useSales] Pagination:", response.data?.pagination);
       
       return response.data;
     },
     enabled: enabled,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: Infinity, // Data never goes stale - won't refetch automatically
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    refetchOnMount: false, // Don't refetch when component mounts
+    refetchOnReconnect: false, // Don't refetch on network reconnect
   });
 }
