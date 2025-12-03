@@ -48,10 +48,7 @@ export default function Dashboard() {
     before: null,
     after: null,
   });
-  // Navigation history stack - stores tokens for pages we've visited
-  // Each entry: { before, after } tokens that were used to reach that page
   const [navigationHistory, setNavigationHistory] = useState([]);
-  // Track which direction we last navigated (to know where to recover to)
   const [lastDirection, setLastDirection] = useState(null);
 
   const debouncedFilters = useDebounce(filters, 500);
@@ -118,7 +115,6 @@ export default function Dashboard() {
   }, []);
 
   const handlePrevious = useCallback(() => {
-    // If we have navigation history, pop the last entry and go back
     if (navigationHistory.length > 0) {
       const newHistory = [...navigationHistory];
       const previousTokens = newHistory.pop();
@@ -128,9 +124,7 @@ export default function Dashboard() {
       return;
     }
     
-    // Otherwise use the API's before token to go to previous page
     if (salesData?.pagination?.before) {
-      // Save current tokens to history before navigating
       setNavigationHistory((prev) => [...prev, paginationTokens]);
       setPaginationTokens({
         before: salesData.pagination.before,
@@ -141,7 +135,6 @@ export default function Dashboard() {
   }, [salesData?.pagination?.before, navigationHistory, paginationTokens]);
 
   const handleNext = useCallback(() => {
-    // If we went too far with "previous" and have history, go back through it
     if (lastDirection === "prev" && navigationHistory.length > 0 && !salesData?.pagination?.before) {
       const newHistory = [...navigationHistory];
       const nextTokens = newHistory.pop();
@@ -151,9 +144,7 @@ export default function Dashboard() {
       return;
     }
     
-    // Otherwise use the API's after token to go to next page
     if (salesData?.pagination?.after) {
-      // Save current tokens to history before navigating
       setNavigationHistory((prev) => [...prev, paginationTokens]);
       setPaginationTokens({
         before: null,
@@ -163,12 +154,11 @@ export default function Dashboard() {
     }
   }, [salesData?.pagination?.after, salesData?.pagination?.before, navigationHistory, paginationTokens, lastDirection]);
 
-  // Determine if we can navigate
-  // Previous: only if we have history OR API has before token (but not on first page)
+  
   const isFirstPage = navigationHistory.length === 0 && !paginationTokens.before && !paginationTokens.after;
   const canGoPrevious = !isFirstPage && (navigationHistory.length > 0 || salesData?.pagination?.before);
   
-  // Next: if API has after token, OR if we went too far back and have history to return
+  
   const wentTooFarBack = lastDirection === "prev" && !salesData?.pagination?.before && navigationHistory.length > 0;
   const canGoNext = salesData?.pagination?.after || wentTooFarBack;
 
@@ -177,7 +167,6 @@ export default function Dashboard() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <Spinner size="xl" />
-          <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
