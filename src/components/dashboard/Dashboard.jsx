@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuthorization } from "@/hooks/useAuth";
 import { useSales } from "@/hooks/useSales";
